@@ -1,0 +1,426 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{Guild} {Year} Unwrapped - {GlobalName}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .message-container {
+            margin: 10px 0;
+            padding: 10px;
+            display: inline-block;
+        }
+
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            font-style: italic;
+            display: inline-block;
+        }
+
+        .stat {
+            margin: 10px 0;
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+            .stat:last-child {
+                border-bottom: none;
+            }
+
+        canvas {
+            max-width: 100%;
+            width: 100%;
+            height: 500px;
+        }
+
+        .hide100, .hide1000, .hide10000, .hide100000, .hide1000000, .hide10000000, .hide100000000 {
+            display: none;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #1e1e1e;
+                color: #f4f4f9;
+            }
+
+            h1 {
+                color: #f4f4f9;
+                text-align: center;
+            }
+
+            .container {
+                background-color: #333;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            }
+
+            .message {
+                color: #cfcfcf;
+            }
+
+            .stat {
+                border-bottom: 1px solid #444;
+            }
+        }
+
+        .emote-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+            .emote-item img {
+                margin-right: 50px;
+            }
+
+            .emote-item span {
+                display: flex;
+                align-items: center;
+                height: 100%;
+            }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://www.cssscript.com/demo/tag-word-cloud/src/wordcloud2.js"></script>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>{GlobalName} your {Guild} {Year} unwrapped!</h1>
+
+        <h2>Names</h2>
+        <p>{DisplayNames}</p>
+        <canvas id="nameChart"></canvas>
+
+        <h2>Stats</h2>
+        <div class="message-container">
+            Total messages sent: {MessagesSent}
+        </div>
+        <br />
+        <div class="message-container">
+            Average message length: <span class="message">{AverageLength} characters</span>
+        </div>
+        <br />
+
+        <h2>Messages by time of day</h2>
+        <canvas id="messagesByTimeOfDay" width="400" height="400"></canvas>
+
+        <h2>Messages per month</h2>
+        <canvas id="messagesPerMonthChart"></canvas>
+
+        <h2>Messages per channel</h2>
+        <canvas id="messagesPerChannelChart" width="400" height="400"></canvas>
+
+        <h2>Emotes</h2>
+
+        <div>
+            Most used server emotes:<br />
+            <br />
+            <div style="display: flex; flex-direction: column;">
+                {TopEmotes}
+            </div>
+        </div>
+
+        <div>
+            <br />
+            All server emotes:<br />
+            <br />
+            {AllEmotes}
+            <br /><br />
+            All emotes:<br />
+            <br />
+            <div style="font-size: xx-large;">
+                {AllEmojies}
+            </div>
+        </div>
+
+        <br />
+
+        <h2>Milestones</h2>
+        <p>
+            It took you {Messages1} days to send your first message.<br />
+            <span class="hide100">It took you {Messages100} to send your first 100 messages.</span><br />
+            <span class="hide1000">It took you {Messages1000} to send your first 1000 messages.<br /></span>
+            <span class="hide10000">It took you {Messages10000} to send your first 10000 messages.<br /></span>
+            <span class="hide100000">It took you {Messages100000} to send your first 100000 messages.<br /></span>
+            <span class="hide1000000">It took you {Messages1000000} to send your first 1000000 messages.<br /></span>
+            <span class="hide10000000">It took you {Messages10000000} to send your first 10000000 messages.<br /></span>
+            <span class="hide100000000">It took you {Messages100000000} to send your first 100000000 messages.<br /></span>
+        </p>
+
+        <h2>Wordcloud</h2>
+        <canvas id="canvas"></canvas>
+    </div>
+    <script>
+        const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        // Messages per name
+        const dataA = {
+            labels: [{NameLabels}],
+            datasets: [{
+                label: 'Messages per name',
+                data: [{NameValues}],
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        };
+        const messagesPerNameConfig = {
+            type: 'bar',
+            horizontal: true,
+            data: dataA,
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            color: isDarkMode ? 'white' : 'black'
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks:
+                        {
+                            color: isDarkMode ? 'white' : 'black'
+                        },
+                        grid: {
+                            color: isDarkMode ? 'white' : 'black'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: isDarkMode ? 'white' : 'black'
+                        },
+                        grid: {
+                            color: isDarkMode ? 'white' : 'black'
+                        }
+                    }
+                }
+            }
+        };
+        new Chart(
+            document.getElementById('nameChart'),
+            messagesPerNameConfig
+        );
+
+
+        //------------------------------
+        // Messages per month
+        const data = {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+            datasets: [{
+                label: 'Messages per Month',
+                data: [{MessagesJan}, {MessagesFeb}, {MessagesMar}, {MessagesApr}, {MessagesMay}, {MessagesJun}, {MessagesJul}, {MessagesAug}, {MessagesSep}, {MessagesOct}, {MessagesNov}, {MessagesDec}],
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        };
+        const messagesPerMonthConfig = {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            color: isDarkMode ? 'white' : 'black'
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks:
+                        {
+                            color: isDarkMode ? 'white' : 'black'
+                        },
+                        grid: {
+                            color: isDarkMode ? 'white' : 'black'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: isDarkMode ? 'white' : 'black'
+                        },
+                        grid: {
+                            color: isDarkMode ? 'white' : 'black'
+                        }
+                    }
+                }
+            }
+        };
+        new Chart(
+            document.getElementById('messagesPerMonthChart'),
+            messagesPerMonthConfig
+        );
+
+
+        //------------------------------
+        // Messages per channel
+        var ctx = document.getElementById('messagesPerChannelChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: [{ChannelNames}],
+                datasets: [{
+                    data: [{ChannelPercentages}],
+                    /*backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']*/
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            color: isDarkMode ? 'white' : 'black'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                var label = context.label || '';
+                                var value = context.raw || 0;
+                                return label + ': ' + value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        window.matchMedia('(prefers-color-scheme: dark)').addListener(event => {
+            const newIsDarkMode = event.matches;
+            myChart.options = getChartOptions(newIsDarkMode).options;
+            myChart.update();
+        });
+
+
+        //------------------------------
+        // Wordcloud
+        const tagList = [
+            {WordCloudWords}
+        ];
+
+        function adjustCanvas(canvas) {
+            var dpr = window.devicePixelRatio || 1;
+            var rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            var ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+        }
+
+        function drawWordCloud() {
+            var canvas = document.getElementById('canvas');
+            adjustCanvas(canvas);
+
+            WordCloud(canvas, {
+                list: tagList,
+                gridSize: Math.round(16 * window.devicePixelRatio),
+                weightFactor: function (size) {
+                    return size * 10 * (window.devicePixelRatio || 1);
+                },
+                fontFamily: 'Times, serif',
+                color: 'random-dark',
+                rotateRatio: 0.5,
+                rotationSteps: 2,
+                backgroundColor: isDarkMode ? '#e0e0e0' : 'white'
+            });
+        }
+
+        window.onload = drawWordCloud;
+
+        //
+        var ctx = document.getElementById('messagesByTimeOfDay').getContext('2d');
+        var myPolarAreaChart = new Chart(ctx, {
+            type: 'polarArea',
+            data: {
+                labels: [
+                    '00:00', '01:00', '02:00', '03:00', '04:00', '05:00',
+                    '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
+                    '12:00', '13:00', '14:00', '15:00', '16:00', '17:00',
+                    '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'
+                ],
+                datasets: [{
+                    label: 'Hourly Data',
+                    data: [{MessagesByHour}],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)', 'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)', 'rgba(255, 159, 64, 0.2)',
+                        'rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)', 'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)', 'rgba(255, 159, 64, 0.2)',
+                        'rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)', 'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)', 'rgba(255, 159, 64, 0.2)',
+                        'rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)', 'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)', 'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)', 'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)',
+                        'rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)', 'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)',
+                        'rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)', 'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)',
+                        'rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)', 'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    r: {
+                        ticks: {
+                            display: false
+                        },
+                        grid: {
+                            color: isDarkMode ? 'white' : 'black'
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 10
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

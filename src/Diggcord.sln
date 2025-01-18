@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diggcord.DiscordBot", "Diggcord.DiscordBot\Diggcord.DiscordBot.csproj", "{14B9F6D5-C96A-42E0-8E4F-CEA70D3E2F4D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diggcord.DiscordUnwrapped.Web", "Diggcord.DiscordUnwrapped.Web\Diggcord.DiscordUnwrapped.Web.csproj", "{18FE7A50-9E46-40D2-96C1-54AA3349BCED}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{14B9F6D5-C96A-42E0-8E4F-CEA70D3E2F4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14B9F6D5-C96A-42E0-8E4F-CEA70D3E2F4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14B9F6D5-C96A-42E0-8E4F-CEA70D3E2F4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14B9F6D5-C96A-42E0-8E4F-CEA70D3E2F4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18FE7A50-9E46-40D2-96C1-54AA3349BCED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18FE7A50-9E46-40D2-96C1-54AA3349BCED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18FE7A50-9E46-40D2-96C1-54AA3349BCED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18FE7A50-9E46-40D2-96C1-54AA3349BCED}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
