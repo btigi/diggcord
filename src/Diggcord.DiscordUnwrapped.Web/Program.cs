@@ -39,9 +39,22 @@ app.MapGet("/unwrapped", async (string authorid, int year, string guildId) =>
     var mergedText = string.Join(" ", messages.Select(s => s.Content));
     mergedText = mergedText.Replace("\"", string.Empty);
 
-    var stopwords = Utilities.GetStopWords();
-    var pattern = @"<:[a-zA-Z0-9]+:[0-9]+>";
+    // Remove urls
+    var pattern = @"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)";
     mergedText = Regex.Replace(mergedText, pattern, string.Empty);
+
+    // Remove irrelevant punctuation and discord formatting
+    mergedText = mergedText.Replace(")", string.Empty);
+    mergedText = mergedText.Replace("(", string.Empty);
+    mergedText = mergedText.Replace("**", string.Empty);
+    mergedText = mergedText.Replace("__", string.Empty);
+    mergedText = mergedText.Replace("`", string.Empty);
+
+    // Remove stopwords
+    var stopwords = Utilities.GetStopWords();
+    pattern = @"<:[a-zA-Z0-9]+:[0-9]+>";
+    mergedText = Regex.Replace(mergedText, pattern, string.Empty);
+
     var words = mergedText.Split([' ', '.', ',', '!', '?'], StringSplitOptions.RemoveEmptyEntries);
     var wordCounts = new Dictionary<string, int>();
     foreach (string word in words)
