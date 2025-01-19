@@ -86,7 +86,7 @@ The page includes visuali\ations on:
 
 The page automtically renders in the user's preferred light/dark mode.
 
-![screenshot showing output](resources/screenshot.png)
+![screenshot showing output](resources/screenshot.jpeg)
 
 
 # Licencing
