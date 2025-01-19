@@ -39,6 +39,7 @@ app.MapGet("/unwrapped", async (string authorid, int year, string guildId) =>
     var mergedText = string.Join(" ", messages.Select(s => s.Content));
     mergedText = mergedText.Replace("\"", string.Empty);
 
+    var stopwords = Utilities.GetStopWords();
     var pattern = @"<:[a-zA-Z0-9]+:[0-9]+>";
     mergedText = Regex.Replace(mergedText, pattern, string.Empty);
     var words = mergedText.Split([' ', '.', ',', '!', '?'], StringSplitOptions.RemoveEmptyEntries);
@@ -47,13 +48,16 @@ app.MapGet("/unwrapped", async (string authorid, int year, string guildId) =>
     {
         var lowerWord = word.ToLower();
         lowerWord = lowerWord.Replace("\n", string.Empty).Trim();
-        if (wordCounts.TryGetValue(lowerWord, out int value))
+        if (!stopwords.Contains(lowerWord))
         {
-            wordCounts[lowerWord] = ++value;
-        }
-        else
-        {
-            wordCounts[lowerWord] = 1;
+            if (wordCounts.TryGetValue(lowerWord, out int value))
+            {
+                wordCounts[lowerWord] = ++value;
+            }
+            else
+            {
+                wordCounts[lowerWord] = 1;
+            }
         }
     }
 
@@ -202,7 +206,7 @@ app.MapGet("/unwrapped", async (string authorid, int year, string guildId) =>
     foreach (var dayGroupedMessage in dayGroupedMessages)
     {
         cumulativeCount += dayGroupedMessage.Count;
-        while (nextThresholdIndex < Thresholds.Milestones.Length && cumulativeCount >= Thresholds.Milestones[nextThresholdIndex])
+        while (nextThresholdIndex < Utilities.Milestones.Length && cumulativeCount >= Utilities.Milestones[nextThresholdIndex])
         {
             if (startDate == null)
             {
@@ -211,11 +215,11 @@ app.MapGet("/unwrapped", async (string authorid, int year, string guildId) =>
             var days = (dayGroupedMessage.Date - startDate.Value).Days;
 
             var daysDescription = days == 1 ? "day" : "days";
-            template = template.Replace($"{{Messages{Thresholds.Milestones[nextThresholdIndex]}}}", $"{days} {daysDescription}");
-            template = template.Replace($"class=\"hide{Thresholds.Milestones[nextThresholdIndex]}\"", string.Empty);
+            template = template.Replace($"{{Messages{Utilities.Milestones[nextThresholdIndex]}}}", $"{days} {daysDescription}");
+            template = template.Replace($"class=\"hide{Utilities.Milestones[nextThresholdIndex]}\"", string.Empty);
 
             nextThresholdIndex++;
-            if (nextThresholdIndex < Thresholds.Milestones.Length)
+            if (nextThresholdIndex < Utilities.Milestones.Length)
             {
                 startDate = dayGroupedMessage.Date;
             }
@@ -314,8 +318,15 @@ GuildId = @guildId";
 
 namespace Diggcord.DiscordUnwrapped.Web
 {
-    public static class Thresholds
+    public static class Utilities
     {
         public static readonly int[] Milestones = [1, 100, 1000, 10000, 100000, 1000000, 10000000];
+
+
+        public static string[] GetStopWords()
+        {
+            var stopwords = File.ReadAllLines("stopwords.txt");
+            return stopwords;
+        }
     }
 }
